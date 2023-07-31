@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "three": "^0.154.0",
+    "three-orbitcontrols": "^2.110.3"
+  },
+  "devDependencies": {
+    "ammo.js": "^0.0.10",
+    "vite": "^4.4.6"
+  }
+}

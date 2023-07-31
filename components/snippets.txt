@@ -1,0 +1,51 @@
+
+# ----- Ammo -----
+
+import * as Ammo from 'ammo.js';
+
+const physicsWorld = new Ammo.btDiscreteDynamicsWorld();
+
+    const bulletShape = new Ammo.btSphereShape(0.25);
+    const bulletBody = new Ammo.btRigidBody(bulletShape);
+    // physicsWorld.addRigidBody(bulletBody);
+    bullet.userData.physicsBody = bulletBody;
+    bullet.userData.physicsBody.applyCentralForce(new Ammo.btVector3(10, 0, 0));
+
+# ----- Bullets -----
+
+  // ----- Bullets
+  if (isDown('a')) {
+    const bulletGeo = new THREE.BoxGeometry(0.25, 0.25, 0.25);
+    const bulletMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const bullet = new THREE.Mesh(bulletGeo, bulletMat);
+    bullet.position.set(phoenix.position.x, phoenix.position.y, phoenix.position.z);
+    scene.add(bullet);
+    bullets.push(bullet);
+  }
+  bullets.forEach(b => {
+    b.position.x += C.moveSpeed * 10;
+    if(b.position.x > 100) {
+      scene.remove(b); 
+      // Attenzione, va anche rimosso dall'array con ad esempio:
+      // arr = arr.filter(function(item) {  return item !== value })
+    }
+  });
+  // physicsWorld.stepSimulation(dt);
+
+# ----- Phoenix -----
+
+
+  if (isDown('ArrowUp')) {
+    phoenix.position.y += moveSpeed * 2;
+  }
+  if (isDown('ArrowDown')) {
+    phoenix.position.y -= moveSpeed * 2;
+  }
+  if (isDown('Control', 'ArrowUp')) {
+    phoenix.position.z -= moveSpeed * 2;
+  }
+  if (isDown('Control', 'ArrowDown')) {
+    phoenix.position.z += moveSpeed * 2;
+  }
+
+  
