@@ -11,6 +11,9 @@ const C = init();
 setupKeyboard();
 
 // ----- Scene Objects
+const hud = document.getElementById("hud");
+scene.add(hud);
+
 let phoenix = loadPhoenix(scene).then((model) => {
   phoenix = model;
 });
@@ -26,6 +29,7 @@ let lastShotTime = 0;
 let lastNumber = 0;
 let seeking = false;
 let expectedAnswer;
+let score = 0;
 function animate(time) {
   requestAnimationFrame(animate);
   const dt = time - prevTime; // Il delta time
@@ -83,6 +87,10 @@ function animate(time) {
   if (distanceAnswerQuestion < 0.1) {
     if (expectedAnswer === answer.text) {
       question.updateText("");
+      score += 10;
+      updateHud("Vai Così");
+    } else {
+      updateHud("Dai che lo sai!");
     }
     answer.updateText("");
     seeking = false;
@@ -90,8 +98,8 @@ function animate(time) {
 
   if (distanceQuestionPhoenix < 0.1) {
     // Colpito: Game Over.
-    console.log(distanceQuestionPhoenix);
     scene.remove(phoenix);
+    updateHud("Game Over!");
   }
 
 
@@ -103,8 +111,10 @@ function animate(time) {
   // Update Numbers
   if (time - lastNumber > 10_000) {
     lastNumber = time;
-    question.updateText("5+5");
-    expectedAnswer = "10";
+    const a = Math.floor(Math.random() * 10);
+    const b = Math.floor(Math.random() * 10);
+    expectedAnswer = "" + (a + b);
+    question.updateText(`${a} + ${b}`);
     question.setPosition(phoenix.position.x + 5, phoenix.position.y + 5, 0);
   }
 
@@ -112,3 +122,8 @@ function animate(time) {
 }
 
 animate();
+
+function updateHud(verbose) {
+  document.getElementById("score").innerHTML = `Punteggio: ${score}`;
+  if (lives) document.getElementById("lives").innerHTML = `${verbose}`;
+}
