@@ -19,6 +19,9 @@ let phoenix = loadPhoenix(scene).then((model) => {
 });
 const bullets = [];
 const sound_slap = new Sound(camera, 'sounds/slash.mp3');
+const sound_scream = new Sound(camera, 'sounds/man-scream-121085.mp3');
+const sound_shot = new Sound(camera, 'sounds/shotgun-shooting-things-105837.mp3');
+const sound_background = new Sound(camera, 'sounds/comic5-25269.mp3', true);
 const question = new Text(scene, "", new THREE.Vector3(100, 0, 0));
 const answer = new Text(scene, "", new THREE.Vector3(0, 0, 0));
 answer.moveSpeed = 0.002;
@@ -54,11 +57,13 @@ function animate(time) {
     const bullet = new Bullet(phoenix.position, bulletDirection, scene);
     bullets.push(bullet);
     sound_slap.play();
+    sound_background.play();
   }
 
   if (isDown('Enter') && time - lastShotTime > C.shotCooldown) {
     lastShotTime = time;
     seeking = true;
+    sound_shot.play();
   }
 
   const numberPressed = isDownNumber();
@@ -99,6 +104,7 @@ function animate(time) {
   if (distanceQuestionPhoenix < 0.1) {
     // Colpito: Game Over.
     scene.remove(phoenix);
+    sound_scream.play();
     updateHud("Game Over!");
   }
 
