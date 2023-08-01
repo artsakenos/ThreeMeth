@@ -16,7 +16,7 @@ let phoenix = loadPhoenix(scene).then((model) => {
 });
 const bullets = [];
 const sound_slap = new Sound(camera, 'sounds/slash.mp3');
-const question = new Text(scene, "", new THREE.Vector3(0, 0, 0));
+const question = new Text(scene, "", new THREE.Vector3(100, 0, 0));
 const answer = new Text(scene, "", new THREE.Vector3(0, 0, 0));
 answer.moveSpeed = 0.002;
 
@@ -81,13 +81,17 @@ function animate(time) {
   const distanceAnswerQuestion = answer.mesh.position.distanceTo(question.mesh.position);
   const distanceQuestionPhoenix = phoenix.position.distanceTo(question.mesh.position);
   if (distanceAnswerQuestion < 0.1) {
+    if (expectedAnswer === answer.text) {
+      question.updateText("");
+    }
     answer.updateText("");
-    question.updateText("");
     seeking = false;
   }
 
   if (distanceQuestionPhoenix < 0.1) {
-
+    // Colpito: Game Over.
+    console.log(distanceQuestionPhoenix);
+    scene.remove(phoenix);
   }
 
 
@@ -100,6 +104,7 @@ function animate(time) {
   if (time - lastNumber > 10_000) {
     lastNumber = time;
     question.updateText("5+5");
+    expectedAnswer = "10";
     question.setPosition(phoenix.position.x + 5, phoenix.position.y + 5, 0);
   }
 
