@@ -13,6 +13,36 @@ setupKeyboard();
 // ----- Scene Objects
 const hud = document.getElementById("hud");
 scene.add(hud);
+const hudObject = new THREE.Object3D();
+hudObject.position.set(0, 0, 5); // Posiziona l'HUD a 5 unità di distanza dalla camera
+hudObject.quaternion.setFromEuler(new THREE.Euler(0, 90, 0)); // Orientamento dell'HUD
+hudObject.scale.set(0.5, 0.5, 0.5); // Scala dell'HUD
+scene.add(hudObject);
+
+var plane_loader = new THREE.TextureLoader();
+plane_loader.load('/images/background_creepy.png', (texture) => {
+  // Creare una superficie plana
+  var geometry = new THREE.PlaneGeometry(1000, 1000);
+  var material = new THREE.MeshBasicMaterial({
+    map: texture,
+    repeat: new THREE.Vector2(2.0, 2.0)
+  });
+
+  var plane = new THREE.Mesh(geometry, material);
+
+  // Posiziona la superficie plana
+  plane.position.set(0, 0, -100);
+  scene.add(plane);
+
+  // Animazione della superficie plana
+  requestAnimationFrame(function() {
+    plane.rotation.x += 0.01;
+    renderer.render(scene, camera);
+  });
+
+  // Scala la superficie plana
+  plane.scale.set(0.3, 0.3, 0.3);
+});
 
 let phoenix = loadPhoenix(scene).then((model) => {
   phoenix = model;
@@ -57,7 +87,6 @@ function animate(time) {
     const bullet = new Bullet(phoenix.position, bulletDirection, scene);
     bullets.push(bullet);
     sound_slap.play();
-    sound_background.play();
   }
 
   if (isDown('Enter') && time - lastShotTime > C.shotCooldown) {
