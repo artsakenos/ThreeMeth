@@ -21,6 +21,8 @@ const fontMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
  */
 export default class Text {
 
+  moveSpeed = 0.001;
+
   constructor(scene, text_string, position_vector) {
     new FontLoader().load('fonts/helvetiker_regular.typeface.json', (font) => {
       const geometry = text_geometry(font, text_string);
@@ -62,11 +64,10 @@ export default class Text {
 
   update(dt) {
     if (!this.mesh?.position) return;
-    const moveSpeed = 0.001;
     const distanceToDestination = this.mesh.position.distanceTo(this.destination);
     if (distanceToDestination > 0.1) {
       const direction = this.destination.clone().sub(this.mesh.position).normalize();
-      const distanceToMove = moveSpeed * dt;
+      const distanceToMove = this.moveSpeed * dt;
       if (distanceToMove < distanceToDestination) {
         this.mesh.position.add(direction.multiplyScalar(distanceToMove));
       } else {

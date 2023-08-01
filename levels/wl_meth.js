@@ -18,11 +18,14 @@ const bullets = [];
 const sound_slap = new Sound(camera, 'sounds/slash.mp3');
 const question = new Text(scene, "", new THREE.Vector3(0, 0, 0));
 const answer = new Text(scene, "", new THREE.Vector3(0, 0, 0));
+answer.moveSpeed = 0.002;
 
 // ----- Animation
 let prevTime = 0;
 let lastShotTime = 0;
 let lastNumber = 0;
+let seeking = false;
+let expectedAnswer;
 function animate(time) {
   requestAnimationFrame(animate);
   const dt = time - prevTime; // Il delta time
@@ -51,8 +54,7 @@ function animate(time) {
 
   if (isDown('Enter') && time - lastShotTime > C.shotCooldown) {
     lastShotTime = time;
-    // answer.updateText("");
-    answer.setDestination(new THREE.Vector3(5, 0, 0));
+    seeking = true;
   }
 
   const numberPressed = isDownNumber();
@@ -70,6 +72,24 @@ function animate(time) {
   answer.update(dt);
   question.setDestination(phoenix.position);
 
+  if (seeking) {
+    answer.setDestination(question.mesh.position);
+  } else {
+    answer.setPosition(phoenix.position);
+  }
+
+  const distanceAnswerQuestion = answer.mesh.position.distanceTo(question.mesh.position);
+  const distanceQuestionPhoenix = phoenix.position.distanceTo(question.mesh.position);
+  if (distanceAnswerQuestion < 0.1) {
+    answer.updateText("");
+    question.updateText("");
+    seeking = false;
+  }
+
+  if (distanceQuestionPhoenix < 0.1) {
+
+  }
+
 
   // Update Pheonix
   if (phoenix?.mixerx) {
@@ -80,7 +100,7 @@ function animate(time) {
   if (time - lastNumber > 10_000) {
     lastNumber = time;
     question.updateText("5+5");
-    // question.setPosition(10,0,0);
+    question.setPosition(phoenix.position.x + 5, phoenix.position.y + 5, 0);
   }
 
   renderer.render(scene, camera);

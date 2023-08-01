@@ -16,7 +16,7 @@ document.body.appendChild(renderer.domElement);
  * @returns Le costanti del game
  */
 export function init() {
-    camera.position.z = 5;
+    camera.position.z = 10;
     return {
         moveSpeed: 0.1,
         gravity: 0.01,
