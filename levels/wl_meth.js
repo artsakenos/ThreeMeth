@@ -5,6 +5,7 @@ import { loadPhoenix } from '../components/phoenix_loader';
 import Bullet from '../components/bullet'
 import Text from '../components/text_loader';
 import Sound from '../components/sound';
+import ParticleSystem from '../components/particle_system';
 
 // ----- Inizializzazione
 const C = init();
@@ -18,6 +19,7 @@ hudObject.position.set(0, 0, 5); // Posiziona l'HUD a 5 unità di distanza dalla
 hudObject.quaternion.setFromEuler(new THREE.Euler(0, 90, 0)); // Orientamento dell'HUD
 hudObject.scale.set(0.5, 0.5, 0.5); // Scala dell'HUD
 scene.add(hudObject);
+let explosion = null;
 
 var plane_loader = new THREE.TextureLoader();
 plane_loader.load('/images/background_creepy.png', (texture) => {
@@ -25,18 +27,13 @@ plane_loader.load('/images/background_creepy.png', (texture) => {
   var geometry = new THREE.PlaneGeometry(1000, 1000);
   var material = new THREE.MeshBasicMaterial({
     map: texture,
-    repeat: new THREE.Vector2(2.0, 2.0)
   });
-
   var plane = new THREE.Mesh(geometry, material);
-
-  // Posiziona la superficie plana
-  plane.position.set(0, 0, -100);
+  plane.position.set(0, 0, -120);
   scene.add(plane);
 
-  // Animazione della superficie plana
   requestAnimationFrame(function() {
-    plane.rotation.x += 0.01;
+    plane.position.x += 0.1;
     renderer.render(scene, camera);
   });
 
@@ -52,6 +49,7 @@ const sound_slap = new Sound(camera, 'sounds/slash.mp3');
 const sound_scream = new Sound(camera, 'sounds/man-scream-121085.mp3');
 const sound_shot = new Sound(camera, 'sounds/shotgun-shooting-things-105837.mp3');
 const sound_background = new Sound(camera, 'sounds/comic5-25269.mp3', true);
+const sound_yeah = new Sound(camera, 'sounds/yeah-7106.mp3');
 const question = new Text(scene, "", new THREE.Vector3(100, 0, 0));
 const answer = new Text(scene, "", new THREE.Vector3(0, 0, 0));
 answer.moveSpeed = 0.002;
@@ -63,6 +61,7 @@ let lastNumber = 0;
 let seeking = false;
 let expectedAnswer;
 let score = 0;
+let game_over = false;
 function animate(time) {
   requestAnimationFrame(animate);
   const dt = time - prevTime; // Il delta time
@@ -93,6 +92,7 @@ function animate(time) {
     lastShotTime = time;
     seeking = true;
     sound_shot.play();
+    sound_background.play();
   }
 
   const numberPressed = isDownNumber();
@@ -123,6 +123,8 @@ function animate(time) {
       question.updateText("");
       score += 10;
       updateHud("Vai Così");
+      sound_yeah.play();
+      explosion = new ParticleSystem(scene, question.mesh.position);
     } else {
       updateHud("Dai che lo sai!");
     }
@@ -133,8 +135,9 @@ function animate(time) {
   if (distanceQuestionPhoenix < 0.1) {
     // Colpito: Game Over.
     scene.remove(phoenix);
-    sound_scream.play();
+    if (!game_over) sound_scream.play();
     updateHud("Game Over!");
+    game_over = true;
   }
 
 
@@ -144,7 +147,7 @@ function animate(time) {
   }
 
   // Update Numbers
-  if (time - lastNumber > 10_000) {
+  if (!game_over && time - lastNumber > 10_000) {
     lastNumber = time;
     const a = Math.floor(Math.random() * 10);
     const b = Math.floor(Math.random() * 10);

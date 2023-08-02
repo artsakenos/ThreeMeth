@@ -29,7 +29,8 @@ export default class Bullet {
     this.mesh.position.add(displacement);
 
     if (particles)
-      this.particleSystem.updatePosition(this.mesh.position);
+    // this.particleSystem.updatePosition(this.mesh.position);
+    this.particleSystem.updateExpansion(this.mesh.position);
 
     // Remove the bullet when it goes out of the scene
     const maxDistance = 50; // Adjust as needed based on your scene size
