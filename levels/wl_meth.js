@@ -24,7 +24,7 @@ let explosion = null;
 var plane_loader = new THREE.TextureLoader();
 plane_loader.load('/images/background_creepy.png', (texture) => {
   // Creare una superficie plana
-  var geometry = new THREE.PlaneGeometry(1000, 1000);
+  var geometry = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
   var material = new THREE.MeshBasicMaterial({
     map: texture,
   });
@@ -32,7 +32,7 @@ plane_loader.load('/images/background_creepy.png', (texture) => {
   plane.position.set(0, 0, -120);
   scene.add(plane);
 
-  requestAnimationFrame(function() {
+  requestAnimationFrame(function () {
     plane.position.x += 0.1;
     renderer.render(scene, camera);
   });
@@ -58,7 +58,8 @@ answer.moveSpeed = 0.002;
 let prevTime = 0;
 let lastShotTime = 0;
 let lastNumber = 0;
-let seeking = false;
+let seeking = false; // Significa che c'è un missile in corsa.
+let shooting = false; // Significa che c'è uno sparo in corsa.
 let expectedAnswer;
 let score = 0;
 let game_over = false;
@@ -69,15 +70,19 @@ function animate(time) {
 
   if (isDown('ArrowLeft')) {
     phoenix.position.x -= C.moveSpeed;
+    if (phoenix.position.x < -10) phoenix.position.x = -10;
   }
   if (isDown('ArrowRight')) {
     phoenix.position.x += C.moveSpeed;
+    if (phoenix.position.x > +10) phoenix.position.x = +10;
   }
   if (isDown('ArrowUp')) {
     phoenix.position.y += C.moveSpeed;
+    if (phoenix.position.y > +6) phoenix.position.y = +6;
   }
   if (isDown('ArrowDown')) {
     phoenix.position.y -= C.moveSpeed;
+    if (phoenix.position.y < -6) phoenix.position.y = -6;
   }
 
   if (isDown('a') && time - lastShotTime > C.shotCooldown) {
@@ -88,11 +93,10 @@ function animate(time) {
     sound_slap.play();
   }
 
-  if (isDown('Enter') && time - lastShotTime > C.shotCooldown) {
-    lastShotTime = time;
-    seeking = true;
+  if (!shooting && isDown('Enter') && time - lastShotTime > C.shotCooldown) {
     sound_shot.play();
     sound_background.play();
+    shooting = true;
   }
 
   const numberPressed = isDownNumber();
@@ -106,11 +110,12 @@ function animate(time) {
     bullet.update(dt);
   });
 
-  question.update(dt);
-  answer.update(dt);
+  const accelerator = (time - lastShotTime) / 10_000;
+  question.update(dt * accelerator);
+  answer.update(dt * accelerator);
   question.setDestination(phoenix.position);
 
-  if (seeking) {
+  if (shooting) {
     answer.setDestination(question.mesh.position);
   } else {
     answer.setPosition(phoenix.position);
@@ -118,21 +123,25 @@ function animate(time) {
 
   const distanceAnswerQuestion = answer.mesh.position.distanceTo(question.mesh.position);
   const distanceQuestionPhoenix = phoenix.position.distanceTo(question.mesh.position);
-  if (distanceAnswerQuestion < 0.1) {
+  if (shooting && distanceAnswerQuestion < 0.1) {
     if (expectedAnswer === answer.text) {
       question.updateText("");
       score += 10;
       updateHud("Vai Così");
       sound_yeah.play();
       explosion = new ParticleSystem(scene, question.mesh.position);
+      seeking = false;
+      lastShotTime = time;
     } else {
       updateHud("Dai che lo sai!");
     }
     answer.updateText("");
-    seeking = false;
+    shooting = false;
   }
 
-  if (distanceQuestionPhoenix < 0.1) {
+  console.log(shooting + " - " + seeking);
+
+  if (seeking && distanceQuestionPhoenix < 0.1) {
     // Colpito: Game Over.
     scene.remove(phoenix);
     if (!game_over) sound_scream.play();
@@ -147,13 +156,14 @@ function animate(time) {
   }
 
   // Update Numbers
-  if (!game_over && time - lastNumber > 10_000) {
+  if (!seeking && !game_over && time - lastNumber > 10_000) {
     lastNumber = time;
     const a = Math.floor(Math.random() * 10);
     const b = Math.floor(Math.random() * 10);
     expectedAnswer = "" + (a + b);
     question.updateText(`${a} + ${b}`);
     question.setPosition(phoenix.position.x + 5, phoenix.position.y + 5, 0);
+    seeking = true;
   }
 
   renderer.render(scene, camera);
