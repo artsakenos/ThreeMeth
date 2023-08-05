@@ -65,17 +65,19 @@ export default class Text {
   update(dt) {
     if (!this.mesh?.position) return;
     const distanceToDestination = this.mesh.position.distanceTo(this.destination);
+    let velocity = new THREE.Vector3();
     if (distanceToDestination > 0.1) {
       const direction = this.destination.clone().sub(this.mesh.position).normalize();
       const distanceToMove = this.moveSpeed * dt;
       if (distanceToMove < distanceToDestination) {
+        velocity = direction.clone().multiplyScalar(this.moveSpeed);
         this.mesh.position.add(direction.multiplyScalar(distanceToMove));
       } else {
+        velocity = direction.clone().multiplyScalar(distanceToDestination / dt);
         this.mesh.position.copy(this.destination);
       }
-    } else {
-      //this.scene.remove(this.mesh);
     }
+    return velocity;
   }
 
   updateText(newText) {

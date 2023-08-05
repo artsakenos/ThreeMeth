@@ -6,6 +6,7 @@ import Bullet from '../components/bullet'
 import Text from '../components/text_loader';
 import Sound from '../components/sound';
 import ParticleSystem from '../components/particle_system';
+import { plane_loader } from '../components/basic_components';
 
 // ----- Inizializzazione
 const C = init();
@@ -19,27 +20,8 @@ hudObject.position.set(0, 0, 5); // Posiziona l'HUD a 5 unità di distanza dalla
 hudObject.quaternion.setFromEuler(new THREE.Euler(0, 90, 0)); // Orientamento dell'HUD
 hudObject.scale.set(0.5, 0.5, 0.5); // Scala dell'HUD
 scene.add(hudObject);
+const plane = plane_loader(scene);
 let explosion = null;
-
-var plane_loader = new THREE.TextureLoader();
-plane_loader.load('/images/background_creepy.png', (texture) => {
-  // Creare una superficie plana
-  var geometry = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
-  var material = new THREE.MeshBasicMaterial({
-    map: texture,
-  });
-  var plane = new THREE.Mesh(geometry, material);
-  plane.position.set(0, 0, -120);
-  scene.add(plane);
-
-  requestAnimationFrame(function () {
-    plane.position.x += 0.1;
-    renderer.render(scene, camera);
-  });
-
-  // Scala la superficie plana
-  plane.scale.set(0.3, 0.3, 0.3);
-});
 
 let phoenix = loadPhoenix(scene).then((model) => {
   phoenix = model;
@@ -112,8 +94,10 @@ function animate(time) {
 
   const accelerator = (time - lastShotTime) / 10_000;
   question.update(dt * accelerator);
-  answer.update(dt * accelerator);
+  const velocity = answer.update(dt * accelerator);
+  if (velocity) console.log(velocity);
   question.setDestination(phoenix.position);
+  // if (explosion) explosion.updateExpansion(answer.mesh.position);
 
   if (shooting) {
     answer.setDestination(question.mesh.position);
@@ -139,8 +123,6 @@ function animate(time) {
     shooting = false;
   }
 
-  console.log(shooting + " - " + seeking);
-
   if (seeking && distanceQuestionPhoenix < 0.1) {
     // Colpito: Game Over.
     scene.remove(phoenix);
@@ -148,7 +130,6 @@ function animate(time) {
     updateHud("Game Over!");
     game_over = true;
   }
-
 
   // Update Pheonix
   if (phoenix?.mixerx) {
