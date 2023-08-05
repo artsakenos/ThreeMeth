@@ -9,6 +9,7 @@ import * as THREE from 'three';
  *  this.particleSystem.remove();
  */
 export default class ParticleSystem {
+
   constructor(scene, position, velocity = null) {
     this.geometry = new THREE.BufferGeometry();
     this.positions = new Float32Array(100 * 3); // Adjust the number of particles as needed
@@ -16,6 +17,8 @@ export default class ParticleSystem {
 
     this.material = new THREE.PointsMaterial({ color: 0x00ff00, size: 0.05, sizeAttenuation: true });
     this.particles = new THREE.Points(this.geometry, this.material);
+
+    this.material.opacity = 1.0;
 
     this.scene = scene;
     scene.add(this.particles);
@@ -25,7 +28,9 @@ export default class ParticleSystem {
     this.velocities = [];
     if (velocity)
       for (let i = 0; i < this.positions.length; i += 3) {
-        this.velocities.push(velocity.clone());
+        // Calculate the individual velocity of each particle by adding the initialVelocity to a random deviation
+        const individualVelocity = velocity.clone().add(new THREE.Vector3(Math.random() * 0.3-0.15, Math.random() * 0.3-0.15, Math.random() * 0.3-0.15));
+        this.velocities.push(individualVelocity);
       }
 
     // Le posizioni di ogni particle si trovano agli indirizzi:
@@ -35,6 +40,30 @@ export default class ParticleSystem {
       // this.positions[i + 1] = (Math.random() - 0.5) * 10.2; // Adjust spread along the y-axis
       // this.positions[i + 2] = (Math.random() - 0.5) * 10.2; // Adjust spread along the z-axis
     }
+  }
+
+  clearParticles() {
+    this.scene.remove(this.particles);
+    this.geometry.dispose();
+    this.material.dispose();
+  }
+
+  updateExplosion(dt) {
+    const numParticles = this.positions.length / 3;
+    for (let i = 0; i < numParticles; i++) {
+      // Update the position of each particle based on its velocity and time
+      this.positions[i * 3] += this.velocities[i].x * dt * 0.007;
+      this.positions[i * 3 + 1] += this.velocities[i].y * dt * 0.007;
+      this.positions[i * 3 + 2] += this.velocities[i].z * dt * 0.007;
+    }
+
+    // Notify Three.js that the particle positions have changed
+    this.geometry.attributes.position.needsUpdate = true;
+
+    // NOT WORKING!
+    this.material.opacity -= 0.1;
+    this.material.needsUpdate = true;
+
   }
 
   updatePosition(position) {

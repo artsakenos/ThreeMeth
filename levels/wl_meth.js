@@ -96,7 +96,7 @@ function animate(time) {
   question.update(dt * accelerator);
   const velocity = answer.update(dt * accelerator);
   question.setDestination(phoenix.position);
-  // if (explosion) explosion.updateExpansion(answer.mesh.position);
+  if (explosion) explosion.updateExplosion(dt);
   // background.update(dt*0.000001);
 
   if (shooting) {
@@ -113,7 +113,8 @@ function animate(time) {
       score += 10;
       updateHud("Vai Così");
       sound_yeah.play();
-      explosion = new ParticleSystem(scene, question.mesh.position);
+      if (explosion) explosion.clearParticles();
+      explosion = new ParticleSystem(scene, question.mesh.position, velocity);
       seeking = false;
       lastShotTime = time;
     } else {
