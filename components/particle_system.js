@@ -9,7 +9,7 @@ import * as THREE from 'three';
  *  this.particleSystem.remove();
  */
 export default class ParticleSystem {
-  constructor(scene, position) {
+  constructor(scene, position, velocity = null) {
     this.geometry = new THREE.BufferGeometry();
     this.positions = new Float32Array(100 * 3); // Adjust the number of particles as needed
     this.geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3));
@@ -20,6 +20,13 @@ export default class ParticleSystem {
     this.scene = scene;
     scene.add(this.particles);
     this.particles.position.copy(position);
+
+    // Store the initial velocity for each particle
+    this.velocities = [];
+    if (velocity)
+      for (let i = 0; i < this.positions.length; i += 3) {
+        this.velocities.push(velocity.clone());
+      }
 
     // Le posizioni di ogni particle si trovano agli indirizzi:
     for (let i = 0; i < this.positions.length; i += 3) {

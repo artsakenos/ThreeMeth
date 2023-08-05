@@ -6,7 +6,6 @@ import Bullet from '../components/bullet'
 import Text from '../components/text_loader';
 import Sound from '../components/sound';
 import ParticleSystem from '../components/particle_system';
-import { plane_loader } from '../components/basic_components';
 import Background from '../components/background';
 
 // ----- Inizializzazione
@@ -98,6 +97,7 @@ function animate(time) {
   const velocity = answer.update(dt * accelerator);
   question.setDestination(phoenix.position);
   // if (explosion) explosion.updateExpansion(answer.mesh.position);
+  // background.update(dt*0.000001);
 
   if (shooting) {
     answer.setDestination(question.mesh.position);
