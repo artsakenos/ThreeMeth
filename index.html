@@ -6,14 +6,39 @@
 	<title>Ultra 3Game</title>
 	<link rel="icon" type="image/x-icon" href="/icons8-game-48.png">
 	<style>
+		@import url('https://fonts.googleapis.com/css2?family=PT+Sans&display=swap');
+
 		body {
 			margin: 0;
+			font-family: 'YR Medicom', sans-serif;
+			font-size: 16px;
+			line-height: 30px;
+			color: #ffffff;
+			text-align: center;
+			text-transform: uppercase;
+		}
+
+		#hud {
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 300px;
+			height: 100px;
+			background-color: #000;
+			border-radius: 10px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+			padding: 1px;
+			text-align: center;
 		}
 	</style>
 </head>
 
 <body>
 	<script type="module" src="levels/wl_meth.js"></script>
+	<div id="hud">
+		<p id="score">Punteggio</p>
+		<p id="lives">Vite</p>
+	</div>
 </body>
 
 </html>

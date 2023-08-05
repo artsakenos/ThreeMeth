@@ -44,3 +44,27 @@ export const sprite_x = (number) => {
     }
     return sprite;
 }
+
+/**
+ * const plane = plane_loader(scene);
+ * 
+ * @param {*} scene The Scene
+ * @returns the Plane
+ */
+export function plane_loader(scene) {
+    var plane_loader = new THREE.TextureLoader();
+    var texture = plane_loader.load('/images/background_creepy.png');
+  
+    var geometry = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
+    var material = new THREE.MeshBasicMaterial({
+      map: texture,
+    });
+    var plane = new THREE.Mesh(geometry, material);
+    plane.position.set(0, 0, -120);
+    scene.add(plane);
+  
+    // Scale the plane
+    plane.scale.set(0.3, 0.3, 0.3);
+  
+    return plane;
+  }
