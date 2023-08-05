@@ -7,6 +7,7 @@ import Text from '../components/text_loader';
 import Sound from '../components/sound';
 import ParticleSystem from '../components/particle_system';
 import { plane_loader } from '../components/basic_components';
+import Background from '../components/background';
 
 // ----- Inizializzazione
 const C = init();
@@ -20,7 +21,7 @@ hudObject.position.set(0, 0, 5); // Posiziona l'HUD a 5 unità di distanza dalla
 hudObject.quaternion.setFromEuler(new THREE.Euler(0, 90, 0)); // Orientamento dell'HUD
 hudObject.scale.set(0.5, 0.5, 0.5); // Scala dell'HUD
 scene.add(hudObject);
-const plane = plane_loader(scene);
+const background = new Background(scene, '/images/background_creepy.png');
 let explosion = null;
 
 let phoenix = loadPhoenix(scene).then((model) => {
@@ -95,7 +96,6 @@ function animate(time) {
   const accelerator = (time - lastShotTime) / 10_000;
   question.update(dt * accelerator);
   const velocity = answer.update(dt * accelerator);
-  if (velocity) console.log(velocity);
   question.setDestination(phoenix.position);
   // if (explosion) explosion.updateExpansion(answer.mesh.position);
 
