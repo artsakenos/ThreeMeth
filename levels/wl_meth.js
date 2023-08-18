@@ -7,6 +7,7 @@ import Text from '../components/text_loader';
 import Sound from '../components/sound';
 import ParticleSystem from '../components/particle_system';
 import Background from '../components/background';
+import CustomSprite from '../components/CustomSprite'
 
 // ----- Inizializzazione
 const C = init();
@@ -23,11 +24,15 @@ scene.add(hudObject);
 const background = new Background(scene, '/images/background_creepy.png');
 let explosion = null;
 
+const sprite_face = new CustomSprite(scene, '/images/face.png');
+
+
 let phoenix = loadPhoenix(scene).then((model) => {
   phoenix = model;
 });
 const bullets = [];
 const sound_slap = new Sound(camera, 'sounds/slash.mp3');
+const sound_ccb = new Sound(camera, 'private/Audio_CCB.mp3');
 const sound_scream = new Sound(camera, 'sounds/man-scream-121085.mp3');
 const sound_shot = new Sound(camera, 'sounds/shotgun-shooting-things-105837.mp3');
 const sound_background = new Sound(camera, 'sounds/comic5-25269.mp3', true);
@@ -119,6 +124,7 @@ function animate(time) {
       lastShotTime = time;
     } else {
       updateHud("Dai che lo sai!");
+      sound_ccb.play();
     }
     answer.updateText("");
     shooting = false;
@@ -136,6 +142,9 @@ function animate(time) {
   if (phoenix?.mixerx) {
     phoenix.mixerx.update(dt * 0.1);
   }
+
+  // Update Face
+  sprite_face.moveBy(new THREE.Vector3(0.01, 0, 0));
 
   // Update Numbers
   if (!seeking && !game_over && time - lastNumber > 10_000) {
