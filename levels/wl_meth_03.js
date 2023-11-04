@@ -19,7 +19,7 @@ const hud = new Hud(scene, camera);
 hud.update("Buona Fortuna!");
 hud.verbose = "Score: ";
 const background = new Background(scene, '/images/background_creepy.png');
-const sprite_face = new CustomSprite(scene, '/images/face.png');
+// const sprite_face = new CustomSprite(scene, '/images/face.png');
 let explosion = null; // Indica se c'è un esplosione in corso.
 
 let phoenix = loadPhoenix(scene).then((model) => {
@@ -32,7 +32,7 @@ const answer = new Text(scene, "", new THREE.Vector3(0, 0, 0));
 answer.moveSpeed = 0.002;
 
 const sound_slap = new Sound(camera, 'sounds/slash.mp3');
-const sound_ccb = new Sound(camera, 'private/Audio_CCB.mp3');
+const sound_ccb = new Sound(camera, 'sounds/oh-no-113125.mp3');
 const sound_scream = new Sound(camera, 'sounds/man-scream-121085.mp3');
 const sound_shot = new Sound(camera, 'sounds/shotgun-shooting-things-105837.mp3');
 const sound_background = new Sound(camera, 'sounds/comic5-25269.mp3', true);

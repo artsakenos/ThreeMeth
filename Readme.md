@@ -2,6 +2,7 @@
 
 # Install
 
+    npm install     # Installazione Dipendenze
     npx vite        # Per il run
     npx vite build  # Per il build production
 
@@ -18,6 +19,7 @@
 * [Phoenix](https://sketchfab.com/3d-models/phoenix-bird-844ba0cf144a413ea92c779f18912042)
 * [Joystick Favicon](https://icons8.com/icon/36501/joystick)
 * Sound Effect by <a href="https://pixabay.com/users/universfield-28281460/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=121085">UNIVERSFIELD</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=121085">Pixabay</a>
+* Sound Effect by <a href="https://pixabay.com/users/sergequadrado-24990007/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=113125">Sergei Chetvertnykh</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=113125">Pixabay</a>
 
 # TODO
 Particles? https://github.com/drawcall/three.proton
