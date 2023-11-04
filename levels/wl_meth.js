@@ -7,34 +7,36 @@ import Text from '../components/text_loader';
 import Sound from '../components/sound';
 import ParticleSystem from '../components/particle_system';
 import Background from '../components/background';
+import CustomSprite from '../components/CustomSprite'
+import Hud from '../components/Hud';
 
 // ----- Inizializzazione
 const C = init();
 setupKeyboard();
 
 // ----- Scene Objects
-const hud = document.getElementById("hud");
-scene.add(hud);
-const hudObject = new THREE.Object3D();
-hudObject.position.set(0, 0, 5); // Posiziona l'HUD a 5 unità di distanza dalla camera
-hudObject.quaternion.setFromEuler(new THREE.Euler(0, 90, 0)); // Orientamento dell'HUD
-hudObject.scale.set(0.5, 0.5, 0.5); // Scala dell'HUD
-scene.add(hudObject);
+const hud = new Hud(scene, camera);
+hud.update("Buona Fortuna!");
+hud.verbose = "Score: ";
 const background = new Background(scene, '/images/background_creepy.png');
-let explosion = null;
+const sprite_face = new CustomSprite(scene, '/images/face.png');
+let explosion = null; // Indica se c'è un esplosione in corso.
 
 let phoenix = loadPhoenix(scene).then((model) => {
   phoenix = model;
 });
+
 const bullets = [];
+const question = new Text(scene, "", new THREE.Vector3(100, 0, 0));
+const answer = new Text(scene, "", new THREE.Vector3(0, 0, 0));
+answer.moveSpeed = 0.002;
+
 const sound_slap = new Sound(camera, 'sounds/slash.mp3');
+const sound_ccb = new Sound(camera, 'private/Audio_CCB.mp3');
 const sound_scream = new Sound(camera, 'sounds/man-scream-121085.mp3');
 const sound_shot = new Sound(camera, 'sounds/shotgun-shooting-things-105837.mp3');
 const sound_background = new Sound(camera, 'sounds/comic5-25269.mp3', true);
 const sound_yeah = new Sound(camera, 'sounds/yeah-7106.mp3');
-const question = new Text(scene, "", new THREE.Vector3(100, 0, 0));
-const answer = new Text(scene, "", new THREE.Vector3(0, 0, 0));
-answer.moveSpeed = 0.002;
 
 // ----- Animation
 let prevTime = 0;
@@ -92,11 +94,11 @@ function animate(time) {
     bullet.update(dt);
   });
 
-  const accelerator = (time - lastShotTime) / 10_000;
+  const accelerator = (time - lastShotTime) / 30_000;
   question.update(dt * accelerator);
   const velocity = answer.update(dt * accelerator);
   question.setDestination(phoenix.position);
-  // if (explosion) explosion.updateExpansion(answer.mesh.position);
+  if (explosion) explosion.updateExplosion(dt);
   // background.update(dt*0.000001);
 
   if (shooting) {
@@ -111,13 +113,15 @@ function animate(time) {
     if (expectedAnswer === answer.text) {
       question.updateText("");
       score += 10;
-      updateHud("Vai Così");
+      hud.update(score, "Vai così!");
       sound_yeah.play();
-      explosion = new ParticleSystem(scene, question.mesh.position);
+      if (explosion) explosion.clearParticles();
+      explosion = new ParticleSystem(scene, question.mesh.position, velocity);
       seeking = false;
       lastShotTime = time;
     } else {
-      updateHud("Dai che lo sai!");
+      hud.update(score, "Dai che lo sai!");
+      sound_ccb.play();
     }
     answer.updateText("");
     shooting = false;
@@ -127,7 +131,7 @@ function animate(time) {
     // Colpito: Game Over.
     scene.remove(phoenix);
     if (!game_over) sound_scream.play();
-    updateHud("Game Over!");
+    hud.update(score, "Game Over!");
     game_over = true;
   }
 
@@ -136,14 +140,17 @@ function animate(time) {
     phoenix.mixerx.update(dt * 0.1);
   }
 
+  // Update Face
+  // sprite_face.moveBy(new THREE.Vector3(0.01, 0, 0));
+
   // Update Numbers
   if (!seeking && !game_over && time - lastNumber > 10_000) {
     lastNumber = time;
-    const a = Math.floor(Math.random() * 10);
-    const b = Math.floor(Math.random() * 10);
+    const a = Math.floor(Math.random() * 10 + score / 20);
+    const b = Math.floor(Math.random() * 10 + score / 20);
     expectedAnswer = "" + (a + b);
     question.updateText(`${a} + ${b}`);
-    question.setPosition(phoenix.position.x + 5, phoenix.position.y + 5, 0);
+    question.setPosition(phoenix.position.x + 7, phoenix.position.y + 5, 5);
     seeking = true;
   }
 
@@ -151,8 +158,3 @@ function animate(time) {
 }
 
 animate();
-
-function updateHud(verbose) {
-  document.getElementById("score").innerHTML = `Punteggio: ${score}`;
-  if (lives) document.getElementById("lives").innerHTML = `${verbose}`;
-}

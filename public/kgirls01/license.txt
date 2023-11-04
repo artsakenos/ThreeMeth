@@ -1,0 +1,11 @@
+Model Information:
+* title:	Kgirls01
+* source:	https://sketchfab.com/3d-models/kgirls01-d2f946f58a8040ae993cda70c97b302c
+* author:	nanofactory (https://sketchfab.com/nanofactory)
+
+Model License:
+* license type:	CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions can not be distributed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Kgirls01" (https://sketchfab.com/3d-models/kgirls01-d2f946f58a8040ae993cda70c97b302c) by nanofactory (https://sketchfab.com/nanofactory) licensed under CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)
